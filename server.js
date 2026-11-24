@@ -1,10 +1,21 @@
 const express = require("express")
+const path = require("path")
 const app = express()
 
-app.use(express.static("public"))
+const publicDir = path.join(__dirname, "public")
 
-app.listen(3000, () =>{
-   console.log("http://localhost:3000") 
-});
+app.use(express.static(publicDir))
 
-module.exports
+app.get("/", (req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"))
+})
+
+// Em produção (Vercel) o app é exportado; localmente sobe na porta 3000
+if (require.main === module) {
+  const port = process.env.PORT || 3000
+  app.listen(port, () => {
+    console.log(`http://localhost:${port}`)
+  })
+}
+
+module.exports = app
